@@ -1,0 +1,6 @@
+ss_1.xlsx
+ss_2.xlsx
+wp_1.docx
+wp_2.docx
+pg_1.pptx
+pg_2.pptx
