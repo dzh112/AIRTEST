@@ -1,5 +1,6 @@
 import os
 import smtplib
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -20,9 +21,8 @@ class SendMail(object):
         msg = MIMEMultipart()
         # 发送内容的对象
         if self.file:  # 处理附件的
-            att = MIMEText(open(self.file, 'r', encoding='UTF-8').read())
-            att["Content-Type"] = 'application/octet-stream'
-            att["Content-Disposition"] = 'attachment; filename="%s"' % self.file
+            att = MIMEApplication(open(self.file, 'rb').read())
+            att.add_header('Content-Disposition', 'attachment', filename=self.file)
             msg.attach(att)
         msg.attach(MIMEText(self.content))  # 邮件正文的内容
         msg['Subject'] = self.title  # 邮件主题
@@ -48,5 +48,14 @@ class SendMail(object):
         print(file_new)
         return file_new
 
-
+if __name__ == '__main__':
+    m = SendMail(
+        email_host='mail.yozosoft.com',
+        username='dzh', passwd='user1057',
+        recv='dzh@yozosoft.com',
+        title='测试完成',
+        content="手机电量: %s" % os.popen("adb shell dumpsys battery |findstr level").readline().split()[1].strip(),
+        test_report=r'F:\AIRTEST\reports'
+    )
+    m.send_mail()
 

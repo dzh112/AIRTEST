@@ -10,7 +10,7 @@ package = pv.package_name
 print(pro_path)
 sheet_path = os.path.join(pro_path, 'airtest_office', 'files_filter1_list.xls')
 sheet_name = ['excel03', 'excel10', 'word03', 'word10', 'ppt03', 'ppt10']
-files = pv.excel_cols_list(sheet_path, sheet_name[1], 1)[0:1]
+files = pv.excel_cols_list(sheet_path, sheet_name[1], 1)[0:-1]
 
 
 # files = ['wp_1.docx']
@@ -34,6 +34,14 @@ class StartEnd(unittest.TestCase):
         pass
 
     def tearDown(self):
+        len1 = str(self).split(" ")[0]
+        len2 = len1.split("_")[-1]
+        len3 = len1.split("_")[-2]
+        len_name = len3 + '.' + len2
+        f = open(os.path.join(pro_path, 'test.txt'), 'a')
+        f.write('\n%s' % len_name)
+        f.close()
+        # print(len_name)
         result = self.defaultTestResult()
         self._feedErrorsToResult(result, self._outcome.errors)
         error = self.list2reason(result.errors)
@@ -41,14 +49,7 @@ class StartEnd(unittest.TestCase):
         wrong = error or failure
 
         if wrong:
-            # len1 = str(self).split(" ")[0]
-            # len2 = len1.split("_")[-1]
-            # len3 = len1.split("_")[-2]
-            # len_name = len3 + '.' + len2
-            # f = open(os.path.join(pro_path, 'test.txt'), 'a')
-            # f.write('\n%s' % len_name)
-            # f.close()
-            # print(len_name)
+
             clear_app(package)
             start_app(package)
             pv.skip_view()
