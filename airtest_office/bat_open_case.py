@@ -3,14 +3,13 @@ from airtest_office.pageview import PageView
 from airtest.core.api import *
 from ddt import ddt, data
 
-
 pv = PageView()
 pro_path = pv.pro_path
 package = pv.package_name
 print(pro_path)
 sheet_path = os.path.join(pro_path, 'airtest_office', 'files_filter1_list.xls')
 sheet_name = ['excel03', 'excel10', 'word03', 'word10', 'ppt03', 'ppt10']
-files = pv.excel_cols_list(sheet_path, sheet_name[1], 1)[0:-1]
+files = pv.excel_cols_list(sheet_path, sheet_name[1], 1)[0:]
 
 
 # files = ['wp_1.docx']
@@ -20,8 +19,8 @@ files = pv.excel_cols_list(sheet_path, sheet_name[1], 1)[0:-1]
 class StartEnd(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        auto_setup(__file__)
-        connect_device("Android:///" + pv.dev)
+        auto_setup(__file__, devices=["Android:///%s" % pv.dev])
+        # connect_device("Android:///" + pv.dev)
         stop_app(package)
         start_app(package)
         pv.into_search_file()
@@ -49,7 +48,6 @@ class StartEnd(unittest.TestCase):
         wrong = error or failure
 
         if wrong:
-
             clear_app(package)
             start_app(package)
             pv.skip_view()

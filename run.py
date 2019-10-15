@@ -13,9 +13,9 @@ if __name__ == '__main__':
     BeautifulReport(suite_tests).report(filename='测试报告' + now, description='批量打开测试',
                                         report_dir='reports')  # log_path='.'把report放到当前目录下
     m = SendMail(
-        email_host='*',
-        username='*', passwd='*',
-        recv='*',
+        email_host='mail.yozosoft.com',
+        username='dzh', passwd='user1057',
+        recv='dzh@yozosoft.com',
         title='测试完成',
         content="手机电量: %s" % os.popen("adb shell dumpsys battery |findstr level").readline().split()[1].strip(),
         test_report=r'F:\AIRTEST\reports'

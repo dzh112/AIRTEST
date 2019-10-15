@@ -1,13 +1,12 @@
 # 读数据
 import os
-
+import pandas as pd
+import numpy as np
 import xlrd
 import xlwt
 
 '''友盟导出数据另存为office埋点统计.xlsx后，使用次脚本筛选'''
 
-
-# 命令：python .\PC_screen.py
 
 def read_excel(filename, thing):
     book = xlrd.open_workbook(filename)
@@ -79,11 +78,19 @@ if __name__ == '__main__':
               'HOME_REGISTER_ACCOUNT', 'HOME_MESSAGE_LOGIN', 'HOME_ACCOUNT_LOGIN', 'HOME_WECHAT_LOGIN',
               'HOME_ENTER_HOME_PAGE', 'ENTER_BY_OA', 'REVISE_MODE', 'SIGN_MODE', 'EDIT_MODE', 'NEW_FILE', 'OPEN_FILE',
               'SAVE_AS', 'SAVE']
-
-    PC_path = os.path.join(os.getcwd(), 'Excel', 'office埋点统计.xlsx')
-    PC_result_path = os.path.join(os.getcwd(), 'Excel', '筛选结果.xlsx')
+    path = os.path.dirname(os.path.dirname(__file__))
+    PC_path = os.path.join(path, 'Excel', 'office埋点统计.xlsx')
+    PC_result_path = os.path.join(path, 'Excel', '筛选结果.xlsx')
     for i in list_a:
         list_sheet.append(read_excel(PC_path, i))
-    list_sheet.insert(0, ('事件Id', '事件名称', '消息数量', '独立用户数'))
-    print(list_sheet)
+    # 合计结果
+    # list_sheet.insert(0, ('事件Id', '事件名称', '消息数量', '独立用户数'))
+    # 按消息数量降序排序
+    x = pd.DataFrame(list_sheet, columns=('事件Id', '事件名称', '消息数量', '独立用户数'))
+    list_dataframe = x.sort_values('消息数量', ascending=False)
+    a = np.array(list_dataframe)  # np.ndarray()
+    b = np.array([['事件Id', '事件名称', '消息数量', '独立用户数']])
+    c = np.insert(a, 0, values=b, axis=0)
+    list_sheet = c.tolist()  # list
     write_excel(PC_result_path, list_sheet)
+

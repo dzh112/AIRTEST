@@ -8,7 +8,8 @@ class Base(object):
     def __init__(self):
         self.dev = '9613fafd'
         self.package_name = 'com.yozo.office'
-        self.pro_path = ''.join(re.findall('(.*AIRTEST)', os.getcwd()))
+        # self.pro_path = ''.join(re.findall('(.*AIRTEST)', os.getcwd()))
+        self.pro_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
         self.poco = AndroidUiautomationPoco(device=Android(self.dev), use_airtest_input=True,
                                             screenshot_each_action=False)
         self.example_file = '欢迎使用永中Office.docx'
