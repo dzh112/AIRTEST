@@ -23,8 +23,9 @@ def read_excel(filename, thing):
             r_values = sheet.row_values(r)
             # print(r_values)
             list1.append(r_values)
-    a = b = 0
+    a, b = 0, 0
     print('事件ID：%s' % thing)
+    print(list1)
     if len(list1) == 0:
         return thing, "未读取到该事件", 0, 0
     print('事件名称：', list1[0][3])
@@ -54,8 +55,8 @@ def write_excel(filename, data):
 if __name__ == '__main__':
     # 导出数据另存为（office埋点统计.xlsx）到桌面，工作表重命名为1
     list_sheet = []
-    list_a = ['OFFICE_SIGN_EDIT_WP', 'OFFICE_SIGN_EDIT_SS', 'OFFICE_SIGN_EDIT_PG', 'OFFICE_SIGN_PLAY_PG',
-              'OFFICE_SIGN_TRANSITION_PG', 'OFFICE_FILE_REVESION_WP', 'OFFICE_INSERT_TABLE_WP',
+    list_a = ['OFFICE_SIGN_EDIT_WP', 'OFFICE_ONLINE_MOUDLE', 'OFFICE_SIGN_EDIT_SS', 'OFFICE_SIGN_EDIT_PG',
+              'OFFICE_SIGN_PLAY_PG', 'OFFICE_SIGN_TRANSITION_PG', 'OFFICE_FILE_REVESION_WP', 'OFFICE_INSERT_TABLE_WP',
               'OFFICE_INSERT_TABLE_PG', 'OFFICE_WP_SAVE', 'OFFICE_WP_SAVE_AS_LOCAL', 'OFFICE_WP_SAVE_AS_CLOUD',
               'OFFICE_SS_SAVE', 'OFFICE_SS_SAVE_AS_LOCAL', 'OFFICE_SS_SAVE_AS_CLOUD', 'OFFICE_WP_EXPORT_PDF',
               'OFFICE_PG_EXPORT_PDF', 'OFFICE_FILE_CLOSE_SAVE_WP', 'OFFICE_FILE_CLOSE_SAVE_SS',
@@ -93,4 +94,3 @@ if __name__ == '__main__':
     c = np.insert(a, 0, values=b, axis=0)
     list_sheet = c.tolist()  # list
     write_excel(PC_result_path, list_sheet)
-
