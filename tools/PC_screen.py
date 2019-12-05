@@ -7,21 +7,21 @@ from airtest.core.android.adb import ADB
 # 命令：python .\PC_screen.py
 
 
-def GetScreenbyADBCap(devices, screenpath, name):
+def GetScreenbyADBCap(screenpath, name):
     # 先给昵称赋值，防止生成图片的命名格式问题。
-    if ":" in devices:
-        nickname = devices.split(":")[1]
+    if ":" in device1:
+        nickname = device1.split(":")[1]
     else:
-        nickname = devices
+        nickname = device1
     print("screenpath=", screenpath)
     png = screenpath + "\\" + time.strftime("%Y%m%d_%H%M%S_",
                                             time.localtime(time.time())) + "_" + nickname + "_" + name + ".png"
     print("png=", png)
-    os.system(" adb -s " + devices + " shell screencap -p /sdcard/01.png")
+    os.system(" adb -s " + device1 + " shell screencap -p /sdcard/01.png")
     time.sleep(1)
     fp = open(png, "a+", encoding="utf-8")
     fp.close()
-    os.system(" adb -s " + devices + " pull /sdcard/01.png " + png)
+    os.system(" adb -s " + device1 + " pull /sdcard/01.png " + png)
     time.sleep(0.5)
     # ADB截图过大，需要压缩，默认压缩比为0.2，全屏。
     # compressImage(png)
@@ -51,11 +51,11 @@ if __name__ == '__main__':
         device1 = ad[int(input_1)][0]  # 设备名称
     PC_path = os.path.join(os.path.expanduser("~"), 'Desktop')  # 保存路径：PC端桌面
     name = "app2019"  # 项目名称
-    GetScreenbyADBCap(device1, PC_path, name)
+    GetScreenbyADBCap(PC_path, name)
     while True:
         print("是否需要继续（Y/N）:")
         jx = input()
         if jx.upper() == "Y":
-            GetScreenbyADBCap(device1, PC_path, name)
+            GetScreenbyADBCap(PC_path, name)
         else:
             break
