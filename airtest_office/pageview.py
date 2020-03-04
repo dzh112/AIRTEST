@@ -1,9 +1,6 @@
-import os
-
 from PIL import Image
 from airtest.core.android import Android
-from airtest.core.api import snapshot, swipe
-
+from airtest.core.api import *
 from airtest_office.BaseView import Base
 
 
@@ -27,11 +24,12 @@ class PageView(Base):
         y = int(app_info['height'])
         a, b, c, d = self.poco(p_value).get_bounds()
         cropped = img.crop((x * d, y * a, x * b, y * c))  # (left, upper, right, lower)
-        print("_________________________________________")
+
         if '.png' not in save_as_path:
             save_as_path = os.path.join(save_as_path, 'pic.png')
         cropped.save(save_as_path)
         os.remove(image_path)  # 删除原图
+        return save_as_path
 
     def skip_view(self):
         while not self.poco("com.yozo.office:id/ll_usednow").exists():
@@ -43,21 +41,90 @@ class PageView(Base):
 
     def search_file(self, file_name):
         self.poco("com.yozo.office:id/et_search").set_text(file_name)
-        self.poco("com.yozo.office:id/iv_search_search").click()
+        # self.poco("com.yozo.office:id/iv_search_search").click()
 
     def open_file(self, file_name):
         self.poco(text=file_name, name="com.yozo.office:id/tv_title").click()
 
-    def wait_file_load_complete(self):
-        file_option = self.poco("com.yozo.office:id/yozo_ui_option_group_button")
-        button_close = self.poco("com.yozo.office:id/yozo_ui_toolbar_button_close")
-        file_title_text = self.poco("com.yozo.office:id/yozo_ui_title_text_view")
-        self.poco.wait_for_all([file_title_text, file_option, button_close], timeout=60)
-        return file_title_text.get_text()
+    def save_as_home_path_and_close(self):
+        app_frame_screen = self.poco_screenshots("com.yozo.office:id/yozo_ui_app_frame_office_view_container",
+                                                 r'F:\AIRTEST\changepng\load_app_frame_screen.png')
+        if self.poco("com.yozo.office:id/yozo_ui_option_group_button").get_text() != '文件':
+            self.poco("com.yozo.office:id/yozo_ui_option_group_button").click()
+            self.poco(text='文件').click()
+        else:
+            self.poco("com.yozo.office:id/yozo_ui_option_expand_button").click()
+        suff = os.path.splitext(self.poco("com.yozo.office:id/yozo_ui_title_text_view").get_text())[1]
+        self.poco("com.yozo.office:id/yozo_ui_ss_option_id_save_as").click()
+        self.poco("com.yozo.office:id/yozo_ui_select_save_folder").click()
+        self.poco("com.yozo.office:id/yozo_ui_select_save_path_local").click()
+        self.poco("com.yozo.office:id/yozo_ui_select_save_path_file_name").set_text('save_as_home')
+        self.poco("com.yozo.office:id/yozo_ui_select_save_path_file_type").click()
+
+        # 选择同类型保存
+        if self.poco("com.yozo.office:id/file_type_item1").get_text() == suff:
+            self.poco("com.yozo.office:id/file_type_item1").click()
+        else:
+            self.poco("com.yozo.office:id/file_type_item2").click()
+        self.poco("com.yozo.office:id/yozo_ui_select_save_path_save_btn").click()
+        if self.poco("android:id/button1").exists():
+            self.poco("android:id/button1").click()
+        self.poco("com.yozo.office:id/yozo_ui_title_text_view").wait_for_appearance()
+        self.poco("com.yozo.office:id/yozo_ui_toolbar_button_close").click()
+        # 返回值：另存为文件名，内容截图路径
+        return 'save_as_home' + suff, app_frame_screen
 
     def close_file(self):
-        self.poco("com.yozo.office:id/yozo_ui_toolbar_button_close").click()
+
+        if self.poco("com.yozo.office:id/password_edit").exists():
+            self.poco("com.yozo.office:id/cancel_btn").click()
+        else:
+            self.poco("com.yozo.office:id/yozo_ui_toolbar_button_close").wait_for_appearance(timeout=120)
+            self.poco("com.yozo.office:id/yozo_ui_toolbar_button_close").click()
+        if self.poco(text='不保存').exists():
+            self.poco(text='不保存').click()
+
+    def wait_file_title(self):
+        self.poco("com.yozo.office:id/yozo_ui_title_text_view").wait_for_appearance(timeout=60)
+
+    def unlocked(self):
+        while not Android().is_screenon():
+            wake()
+            while Android().is_locked():
+                self.poco("com.android.systemui:id/unlock_indicator").swipe([0.0, -1])
+
+    @staticmethod
+    def fail_file_choose():
+        data0 = []
+        for line in open(r'F:\AIRTEST\logs\runlog.log', 'r'):
+            if 'fail' in line:
+                data0.append(line)
+                # data0.append(line)
+        return data0
+
+    @staticmethod
+    def walkfile(file):
+        list1 = []
+        for root, dirs, files in os.walk(file):
+
+            # root 表示当前正在访问的文件夹路径
+            # dirs 表示该文件夹下的子目录名list
+            # files 表示该文件夹下的文件list
+
+            # 遍历文件
+
+            for f in files:
+                list1.append(os.path.join(root, f))
+        return list1
+        # # 遍历所有的文件夹
+        # for d in dirs:
+        #     print(os.path.join(root, d))
 
 
 if __name__ == '__main__':
-    print(os.getcwd())
+
+    f = open(r'F:\AIRTEST\logs\runlog.log', 'a')
+    f.write('\n')
+    for i in PageView.fail_file_choose():
+        f.write(i)
+    f.close()
